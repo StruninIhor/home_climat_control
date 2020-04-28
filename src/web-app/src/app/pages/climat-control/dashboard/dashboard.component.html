@@ -1,11 +1,88 @@
-<div class="chart-wrapper">
-    <canvas baseChart 
-        [datasets]="lineChartData" 
-        [labels]="lineChartLabels" 
-        [options]="lineChartOptions"
-        [colors]="lineChartColors" 
-        [legend]="lineChartLegend" 
-        [chartType]="lineChartType" 
-        [plugins]="lineChartPlugins">
-    </canvas>
-</div>
+<mat-card>
+    
+</mat-card>
+
+
+
+<mat-card>
+    
+</mat-card>
+
+
+<mat-card>
+    <mat-expansion-panel>
+        <!-- <section *ngIf="!this.data">
+    
+        </section> -->
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+              Temperature
+            </mat-panel-title>
+            <mat-panel-description>Temperature sensor data</mat-panel-description>
+          </mat-expansion-panel-header>
+          <mat-progress-bar
+          *ngIf="!this.data" 
+          mode="query"
+          color="primary"
+          ></mat-progress-bar>
+          <app-sensor-data-chart
+            [datasets]="temperatures"
+            [labels]="dateLabels()"
+            [colors]="lineChartColors"
+            [showLegend]="true"
+            [min-y]="0"
+            [max-y]="25"
+            *ngIf="this.data"
+            >
+    </app-sensor-data-chart>
+    </mat-expansion-panel>
+    <mat-expansion-panel>
+        <!-- <section *ngIf="!this.data">
+    
+        </section> -->
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+              Humidity
+            </mat-panel-title>
+            <mat-panel-description>Humidity sensor data</mat-panel-description>
+          </mat-expansion-panel-header>
+          <mat-progress-bar
+          *ngIf="!this.data" 
+          mode="query"
+          color="primary"
+          ></mat-progress-bar>
+          <app-sensor-data-chart
+            [datasets]="humidities"
+            [labels]="dateLabels()"
+            [colors]="lineChartColors"
+            [showLegend]="true"
+            *ngIf="this.data"
+            >
+    </app-sensor-data-chart>
+    </mat-expansion-panel>
+    <mat-expansion-panel>
+        <!-- <section *ngIf="!this.data">
+    
+        </section> -->
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+              Pressure
+            </mat-panel-title>
+            <mat-panel-description>Pressure sensor data</mat-panel-description>
+          </mat-expansion-panel-header>
+          <mat-progress-bar
+          *ngIf="!this.data" 
+          mode="query"
+          color="primary"
+          ></mat-progress-bar>
+          <app-sensor-data-chart
+            [datasets]="pressures"
+            [labels]="dateLabels()"
+            [colors]="lineChartColors"
+            [showLegend]="true"
+            *ngIf="this.data"
+            >
+    </app-sensor-data-chart>
+    </mat-expansion-panel>
+</mat-card>
+

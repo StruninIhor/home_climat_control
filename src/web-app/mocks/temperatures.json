@@ -1,0 +1,52 @@
+{
+    "sensor-data": [
+        {
+            "dateTime": "2020-04-28T06:00:00.000Z",
+            "temperature": 13.4,
+            "humidity": 50,
+            "pressure": 980
+        },
+        {
+            "dateTime": "2020-04-28T07:00:00.000Z",
+            "temperature": 14.6,
+            "humidity": 57,
+            "pressure": 987
+        },
+        {
+            "dateTime": "2020-04-28T08:00:00.000Z",
+            "temperature": 15.4,
+            "humidity": 60,
+            "pressure": 950
+        },
+        {
+            "dateTime": "2020-04-28T09:00:00.000Z",
+            "temperature": 16.5,
+            "humidity": 50,
+            "pressure": 956
+        },
+        {
+            "dateTime": "2020-04-28T10:00:00.000Z",
+            "temperature": 15.7,
+            "humidity": 40,
+            "pressure": 968
+        },
+        {
+            "dateTime": "2020-04-28T11:00:00.000Z",
+            "temperature": 15,
+            "humidity": 30,
+            "pressure": 956
+        },
+        {
+            "dateTime": "2020-04-28T12:00:00.000Z",
+            "temperature": 13.2,
+            "humidity": 25,
+            "pressure": 970
+        },
+        {
+            "dateTime": "2020-04-28T13:00:00.000Z",
+            "temperature": 10,
+            "humidity": 37,
+            "pressure": 1017
+        }
+    ]
+}
