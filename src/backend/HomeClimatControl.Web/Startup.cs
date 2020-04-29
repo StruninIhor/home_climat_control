@@ -1,4 +1,6 @@
+using System.IO;
 using System.Linq;
+using System.Xml;
 using HomeClimatControl.Web.Application.Services;
 using HomeClimatControl.Web.Application.Services.ServiceOptions;
 using HomeClimatControl.Web.Data;
@@ -10,17 +12,36 @@ using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OData.Edm;
+using OdataToEntity.ModelBuilder;
 
 namespace HomeClimatControl.Web
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public void GenerateOdataClient()
         {
+            var model = GetEdmModel();
+            var generator = new OeJsonSchemaGenerator(model);
+            using (var ms = new MemoryStream())
+            {
+                generator.Generate(ms);
+                ms.Position = 0;
+                File.WriteAllBytes("schemas/json_schema.json", ms.ToArray());
+            }
+        }
+
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                GenerateOdataClient();
+            }
             Configuration = configuration;
         }
 

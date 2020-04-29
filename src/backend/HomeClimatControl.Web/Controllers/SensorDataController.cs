@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using HomeClimatControl.Web.Application.Services;
 using HomeClimatControl.Web.Data;
 using HomeClimatControl.Web.Domain.Entities;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OData.Edm;
 
 namespace HomeClimatControl.Web.Controllers
 {
@@ -16,8 +18,28 @@ namespace HomeClimatControl.Web.Controllers
         private readonly ClimatDataService _dataService;
         public SensorDataController(ClimatDbContext context, ClimatDataService dataService) => (_context, _dataService) = (context, dataService);
 
-        [EnableQuery]
-        public IEnumerable<SensorRecord> Get() => _context.SensorRecords;
+        [HttpGet]
+        public IEnumerable<SensorRecord> Get(DateTime? startDate, DateTime? endDate, int? count)
+        {
+            var q = _context.SensorRecords
+                .AsQueryable()
+                .OrderByDescending(x => x.Date)
+                .AsQueryable();
+            if (startDate != null)
+            {
+                q = q.Where(x => x.Date > startDate);
+            }
+            if (endDate != null)
+            {
+                q = q.Where(x => x.Date < endDate);
+            }
+            if (count != null)
+            {
+                q = q.Take(count.Value);
+            }
+            return q.ToArray();
+
+        }
 
         [HttpPut("humidityLevel")]
         public IActionResult ConfigureHumidity([FromBody] HumididityConfigurationModel model)
