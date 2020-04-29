@@ -19,6 +19,12 @@ export class ClimatDataService extends BaseApi {
    * getTemperatures
    */
   public getData() : Observable<ClimatData[]> {
-    return this.get('sensor-data');
+    return this.get('sensordata');
+  }
+
+  public startMaintenance() : Observable<boolean> {
+    return this.put<any>('sensordata/startmaintenance').pipe(data => {
+      return data["result"];
+    })
   }
 }

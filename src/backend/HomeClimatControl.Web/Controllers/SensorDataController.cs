@@ -19,11 +19,11 @@ namespace HomeClimatControl.Web.Controllers
         public SensorDataController(ClimatDbContext context, ClimatDataService dataService) => (_context, _dataService) = (context, dataService);
 
         [HttpGet]
-        public IEnumerable<SensorRecord> Get(DateTime? startDate, DateTime? endDate, int? count)
+        public ActionResult<SensorRecord[]> Get(DateTime? startDate, DateTime? endDate, int? count)
         {
             var q = _context.SensorRecords
                 .AsQueryable()
-                .OrderByDescending(x => x.Date)
+                .OrderBy(x => x.Date)
                 .AsQueryable();
             if (startDate != null)
             {

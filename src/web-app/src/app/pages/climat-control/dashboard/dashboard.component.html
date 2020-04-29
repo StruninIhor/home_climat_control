@@ -1,11 +1,48 @@
 <mat-card>
+  <mat-card-content>
+    <h2 class="example-h2">Result</h2>
+
     
+  </mat-card-content>
 </mat-card>
 
 
 
 <mat-card>
+    <mat-grid-list cols="3" rowHeight="100px">
+      <mat-grid-tile
+      [colspan]="1"
+      [rowspan]="1"
+      [style.background]="tileColor"
+      >
+        Temperature: {{temperature}} &deg;C
+      </mat-grid-tile>
+      <mat-grid-tile
+      [colspan]="1"
+      [rowspan]="1"
+      [style.background]="tileColor"
+      >
+        Pressure: {{pressure}}
+      </mat-grid-tile>
+      <mat-grid-tile
+      [colspan]="1"
+      [rowspan]="1"
+      [style.background]="tileColor"
+      >
     
+        Humidity:
+        <div style="position: relative; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
+          <mat-progress-spinner
+          style="width: 100px;height: 100px;position: absolute;top: 0;left: 0;"
+          color="primary"
+          mode="determinate"
+          [value]="humidity">
+      </mat-progress-spinner>
+      <h2>{{humidity}} %</h2>
+        </div>
+      
+      </mat-grid-tile>
+    </mat-grid-list>
 </mat-card>
 
 
@@ -27,11 +64,10 @@
           ></mat-progress-bar>
           <app-sensor-data-chart
             [datasets]="temperatures"
-            [labels]="dateLabels()"
+            [labels]="dateLabels"
             [colors]="lineChartColors"
             [showLegend]="true"
             [min-y]="0"
-            [max-y]="25"
             *ngIf="this.data"
             >
     </app-sensor-data-chart>
@@ -53,7 +89,7 @@
           ></mat-progress-bar>
           <app-sensor-data-chart
             [datasets]="humidities"
-            [labels]="dateLabels()"
+            [labels]="dateLabels"
             [colors]="lineChartColors"
             [showLegend]="true"
             *ngIf="this.data"
@@ -77,7 +113,7 @@
           ></mat-progress-bar>
           <app-sensor-data-chart
             [datasets]="pressures"
-            [labels]="dateLabels()"
+            [labels]="dateLabels"
             [colors]="lineChartColors"
             [showLegend]="true"
             *ngIf="this.data"

@@ -2,7 +2,8 @@ import { Moment } from 'moment'
 
 
 export class ClimatData {
-    dateTime : Moment;
+    id : number;
+    date : Moment;
     humidity: number;
     temperature: number;
     pressure: number;
