@@ -1,0 +1,21 @@
+<mat-card>
+    <button mat-stroked-button color="warn" class="config-button" (click)="maintenanceOn()">Maintenance ON</button>
+    <button mat-button color="warn" class="config-button" (click)="maintenanceOff()">Maintenance OFF</button>
+</mat-card>
+<br><br>
+<mat-card>
+    <form (ngSubmit)="setHumidityLevels()" #humidityForm="ngForm">
+        <h3>Configure humidity levels</h3>
+        <mat-form-field class="example-full-width">
+            <mat-label>Low level</mat-label>
+            <input matInput step="1" type="number" placeholder="Low level" id="lowLevel" name="lowLevel" [(ngModel)]="humidityLevel.lowLevel" required app-min="1" [app-max]="humidityLevel.highLevel - 1">
+          </mat-form-field>
+          <br>
+        <mat-form-field>
+            <mat-label>High level</mat-label>
+        <input matInput step="1" type="number" placeholder="High level" id="highLevel" name="highLevel" [(ngModel)]="humidityLevel.highLevel" required [app-min]="humidityLevel.lowLevel + 1" app-max="99">
+        </mat-form-field>
+        <br>
+        <button mat-button color="primary" [disabled]="humidityForm.invalid || humidityForm.untouched">Submit</button>
+    </form>
+</mat-card>

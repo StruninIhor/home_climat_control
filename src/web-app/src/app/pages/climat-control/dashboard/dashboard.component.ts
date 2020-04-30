@@ -4,6 +4,7 @@ import * as moment from 'moment'
 import { ChartDataSets, ChartOptions } from 'chart.js';
 import { Label, Color } from 'ng2-charts';
 import { ClimatDataService } from '../common/services/climat-data.service';
+import { ClimatDataQuery } from '../common/models/climat-data-query';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -58,23 +59,38 @@ export class DashboardComponent implements OnInit {
    public dateLabels : Label[] = []
 
    public getDataForKey<T>(data: ClimatData[], key: string) {
-     return this.data.map<T>(x => x[key])
+     return data.map<T>(x => x[key])
    }
 
-  ngOnInit(): void {
-    this.dataService.getData().subscribe(data => {
-      this.data = data;
-      let temp = this.getDataForKey<number>(data, "temperature");
-      let humidities = this.getDataForKey<number>(data, "humidity");
-      let pressures = this.getDataForKey<number>(data, "pressure");
+   processData(data : ClimatData[], current : boolean = true) {
+    let temp = this.getDataForKey<number>(data, "temperature");
+    let humidities = this.getDataForKey<number>(data, "humidity");
+    let pressures = this.getDataForKey<number>(data, "pressure");
+    if (current) {
       this.temperature = temp[temp.length - 1];
       this.humidity = humidities[humidities.length - 1];
       this.pressure = pressures[pressures.length - 1];
-      this.temperatures[0].data = temp;
-      this.humidities[0].data = humidities;
-      this.pressures[0].data = pressures;
-      this.dateLabels = this.data.map((x,i) => moment.utc(x.date).format('HH:mm:ss'));
+    }
+    this.temperatures[0].data = temp;
+    this.humidities[0].data = humidities;
+    this.pressures[0].data = pressures;
+    this.dateLabels = data.map((x,i) => moment.utc(x.date).format('HH:mm:ss'));
+    this.data = data;
+   }
+  ngOnInit(): void {
+    var query : ClimatDataQuery = {
+      count: 60,
+      endDate: void 0,
+      startDate: void 0
+    };
+    this.dataService.getData(query).subscribe(data => {
+     this.processData(data);
     })
+  }
+
+
+  queryData() {
+
   }
 
 }

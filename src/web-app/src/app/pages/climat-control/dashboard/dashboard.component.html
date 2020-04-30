@@ -1,14 +1,13 @@
-<mat-card>
-  <mat-card-content>
-    <h2 class="example-h2">Result</h2>
 
-    
-  </mat-card-content>
-</mat-card>
-
-
-
-<mat-card>
+<div *ngIf="!data">
+  <h2 align="center">Receiving data from server...</h2>
+<mat-progress-bar
+mode="query"
+color="primary"
+></mat-progress-bar>
+</div>
+<div *ngIf="data">
+  <mat-card>
     <mat-grid-list cols="3" rowHeight="100px">
       <mat-grid-tile
       [colspan]="1"
@@ -44,9 +43,8 @@
       </mat-grid-tile>
     </mat-grid-list>
 </mat-card>
-
-
-<mat-card>
+<mat-divider></mat-divider>
+  <mat-card>
     <mat-expansion-panel>
         <!-- <section *ngIf="!this.data">
     
@@ -121,3 +119,4 @@
     </mat-expansion-panel>
 </mat-card>
 
+</div>
