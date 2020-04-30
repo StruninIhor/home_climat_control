@@ -22,7 +22,7 @@
       [rowspan]="1"
       [style.background]="tileColor"
       >
-        Pressure: {{pressure}}
+        Pressure: {{pressure}} hPa
       </mat-grid-tile>
       <mat-grid-tile
       [colspan]="1"
@@ -67,7 +67,6 @@
             [labels]="dateLabels"
             [colors]="lineChartColors"
             [showLegend]="true"
-            [min-y]="0"
             *ngIf="this.data"
             >
     </app-sensor-data-chart>
