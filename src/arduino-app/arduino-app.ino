@@ -18,9 +18,9 @@ Adafruit_BME280 bme; // I2C
 
 #define LOW_HUMIDITY_LEVEL 30
 #define HIGH_HUMIDITY_LEVEL 60
-#define CONTROL_PIN 13
+#define CONTROL_PIN 12
 uint32_t delayTime = 3000u;
-bool state = false;
+bool state = true;
 bool maintenance = false;
 float lowHumidityLevel = LOW_HUMIDITY_LEVEL;
 float highHumidityLevel = HIGH_HUMIDITY_LEVEL;
@@ -81,7 +81,11 @@ void mainFunc() {
   Serial.println();
   if (DEBUG) {
     Serial.println("Low humidity level " + String(lowHumidityLevel) + "; High " + String(highHumidityLevel));
+    Serial.println("Device state: " + String(state));
     Serial.println("Maintenance: " + String(maintenance));
+  }
+  if (lowHumidityLevel < humidity && humidity < highHumidityLevel) {
+    switchHumidifier(false, false);
   }
   if (humidity > highHumidityLevel) {
     switchHumidifier(false, false);
@@ -94,7 +98,8 @@ void mainFunc() {
 void switchHumidifier(bool switchState, bool hard) {
   
   if (state != switchState && (!maintenance || hard)) {
-    digitalWrite(CONTROL_PIN, state ? LOW : HIGH);
+     if (DEBUG) Serial.println(String("Switching device ") + (switchState ? "on" : "off"));
+    digitalWrite(CONTROL_PIN, switchState ? LOW : HIGH);
     state = switchState;
   }
   //Serial.print("Serial state: ");
