@@ -26,7 +26,7 @@ namespace HomeClimatControl.Web
 {
     public class Startup
     {
-        private static object dbMigrateLock = new object();
+        private static readonly object dbMigrateLock = new object();
         private static bool _isDbMigrated = false;
         public static bool IsDbMigrated
         {
@@ -49,21 +49,19 @@ namespace HomeClimatControl.Web
         {
             var model = GetEdmModel();
             var generator = new OeJsonSchemaGenerator(model);
-            using (var ms = new MemoryStream())
-            {
-                generator.Generate(ms);
-                ms.Position = 0;
-                File.WriteAllBytes("schemas/json_schema.json", ms.ToArray());
-            }
+            using var ms = new MemoryStream();
+            generator.Generate(ms);
+            ms.Position = 0;
+            File.WriteAllBytes("schemas/json_schema.json", ms.ToArray());
         }
 
 
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                GenerateOdataClient();
-            }
+            //if (env.IsDevelopment())
+            //{
+            //    GenerateOdataClient();
+            //}
             Configuration = configuration;
         }
 
