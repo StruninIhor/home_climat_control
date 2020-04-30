@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.IO.Ports;
 using System.Linq;
+using System.Threading;
 
 namespace HomeClimatControl.Web.Application.Services
 {
@@ -88,6 +89,10 @@ namespace HomeClimatControl.Web.Application.Services
             ExecuteWithPort(port =>
             {
                 _logger.LogInformation("Sending command {command}", command);
+                //Waiting for buffer will be fulfilled with data
+                Thread.Sleep(1500);
+                //Read all existing data from buffer for prevent errors
+                port.ReadExisting();
                 port.Write(command);
                 var counter = 0;
                 while (counter++ < _options.OkRetryCount)
