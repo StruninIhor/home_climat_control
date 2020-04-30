@@ -9,11 +9,20 @@ import { ChartsModule } from 'ng2-charts'
 import { HttpClientModule } from '@angular/common/http';
 import { SensorDataChartComponent } from './pages/climat-control/common/components/sensor-data-chart/sensor-data-chart.component';
 import { MaterialModule } from './modules/material/material.module';
+import { ConfigurationComponent } from './pages/climat-control/configuration/configuration.component';
+import { FormsModule } from '@angular/forms';
+import { MaxValidatorDirective } from './shared/directives/max-validator.directive';
+import { MinValidatorDirective } from './shared/directives/min-validator.directive';
+import { HistoricalDataComponent } from './pages/climat-control/historical-data/historical-data.component';
 @NgModule({
   declarations: [
     AppComponent,
     DashboardComponent,
-    SensorDataChartComponent
+    SensorDataChartComponent,
+    ConfigurationComponent,
+    MaxValidatorDirective,
+    MinValidatorDirective,
+    HistoricalDataComponent,
   ],
   imports: [
     BrowserModule,
@@ -21,7 +30,8 @@ import { MaterialModule } from './modules/material/material.module';
     BrowserAnimationsModule,
     HttpClientModule,
     MaterialModule,
-    ChartsModule
+    ChartsModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent],
