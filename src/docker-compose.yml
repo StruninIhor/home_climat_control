@@ -1,13 +1,17 @@
 version: '3.4'
 
 services:
-    backend:
+    climat-control.backend:
+        image: climat-control.backend:dev
         build:
             context: ./backend
             dockerfile: ./HomeClimatControl.Web/Dockerfile
         ports:
             - 5000:80
-    webapp:
+        devices:
+            - "/dev/ttyUSB0":"/dev/ttyUSB0"
+    climat-control.webapp:
+        image: climat-control.webapp:dev
         build: ./web-app
         ports:
             - 5001:80
