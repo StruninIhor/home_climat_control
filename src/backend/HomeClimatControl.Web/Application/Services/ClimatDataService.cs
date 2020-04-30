@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.IO.Ports;
+using System.Linq;
 
 namespace HomeClimatControl.Web.Application.Services
 {
@@ -12,8 +13,10 @@ namespace HomeClimatControl.Web.Application.Services
     {
         private readonly SerialPortOptions _options;
         private readonly ILogger<ClimatDataService> _logger;
-        public ClimatDataService(IOptionsSnapshot<SerialPortOptions> options, ILogger<ClimatDataService> logger) => 
-           (_options, _logger) = (options?.Value ?? throw new ArgumentNullException(nameof(options)), logger);
+        public ClimatDataService(IOptionsSnapshot<SerialPortOptions> options, ILogger<ClimatDataService> logger) 
+        {
+            (_options, _logger) = (options?.Value ?? throw new ArgumentNullException(nameof(options)), logger);
+        }
 
         class SensorDataItem
         {
@@ -22,47 +25,58 @@ namespace HomeClimatControl.Web.Application.Services
             public float? P { get; set; }
         }
         private static readonly object portLock = new object();
-        private SerialPort CreatePort()
-        {
-            return new SerialPort
+        private SerialPort CreatePort() => new SerialPort
             {
                 PortName = _options.SerialPortName,
                 BaudRate = _options.BaudRate
             };
+
+        private void ExecuteWithPort(Action<SerialPort> action)
+        {
+           
+            try
+            {
+                lock (portLock)
+                {
+                    using var port = CreatePort();
+                    port.Open();
+                    action(port);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Error while executing action with sensor!");
+            }
         }
 
     public SensorDataDto GetCurrentData()
         {
-            
-            string data;
-            lock (portLock)
-            {
-                using var port = CreatePort();
-                port.Open();
-                data = port.ReadLine();
-                port.Close();
-            }
+            string data = null;
             var counter = 0;
             while (counter < _options.OkRetryCount)
             {
-                try
+                bool validJson = false;
+                while (!validJson)
                 {
-                    var item = Newtonsoft.Json.JsonConvert.DeserializeObject<SensorDataItem>(data);
-                    if (item != null)
+                    ExecuteWithPort(port =>
                     {
-                        return new SensorDataDto
-                        {
-                            Date = DateTime.Now,
-                            Humidity = item.H,
-                            Pressure = item.P,
-                            Temperature = item.T
-                        };
-                    }
+                        data = port.ReadLine();
+                        _logger.LogInformation($"Received data: \n\t{data}");
+                        //Simple json validation, to make sure data is valid
+                        validJson = data.Count(x => x == '{') == 1 && data.Count(x => x == '}') == 1 && data.Count(x => x == ',') == 2 && data.Count(x => x == '\"') == 6 && data.Count(x => x == '.') == 3;
+                        _logger.LogInformation("Data is valid: {dataIsValid}", validJson);
+                    });
                 }
-                catch (Exception ex)
+                var item = Newtonsoft.Json.JsonConvert.DeserializeObject<SensorDataItem>(data);
+                if (item != null)
                 {
-                    _logger.LogWarning(ex, "Error while reading data from sensor!");
-                    System.Threading.Thread.Sleep(TimeSpan.FromSeconds(1));
+                    return new SensorDataDto
+                    {
+                        Date = DateTime.Now,
+                        Humidity = item.H,
+                        Pressure = item.P,
+                        Temperature = item.T
+                    };
                 }
             }
             return null;
@@ -71,10 +85,8 @@ namespace HomeClimatControl.Web.Application.Services
         private bool SendCommand(string command)
         {
             var applied = false;
-            lock (portLock)
+            ExecuteWithPort(port =>
             {
-                using var port = CreatePort();
-                port.Open();
                 _logger.LogInformation("Sending command {command}", command);
                 port.Write(command);
                 var counter = 0;
@@ -90,13 +102,12 @@ namespace HomeClimatControl.Web.Application.Services
                         break;
                     }
                 }
-                port.Close();
-            }
+            });
             return applied;
         }
         public bool ConfigureHumidityLevel(float lowLevel, float highLevel)
         {
-            bool levelValid(float val) => val < 100 & val > 0;
+            static bool levelValid(float val) => val < 100 & val > 0;
             if (!levelValid(lowLevel)) throw new Exception("Low level should be between 0 and 100!");
             if (!levelValid(highLevel)) throw new Exception("Low level should be between 0 and 100!");
             if (lowLevel >= highLevel)

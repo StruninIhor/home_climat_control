@@ -37,11 +37,12 @@ namespace HomeClimatControl.Web
                    .AddEnvironmentVariables()
                    .Build();
             return Host.CreateDefaultBuilder(args)
-                  .UseSerilog()
                   .UseSystemd()
                   .ConfigureWebHostDefaults(webBuilder =>
                   {
                       webBuilder
+                      .UseKestrel()
+                      .UseSerilog()
                       .UseConfiguration(config)
                       .UseStartup<Startup>();
                   });

@@ -12,6 +12,7 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,6 +31,7 @@ namespace HomeClimatControl.Web.HostedServices
         public Task StartAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Sensor data worker is starting");
+            _logger.LogInformation("Worker will execute each {secondsDelay}", _options.SecondsDelay);
             _timer = new Timer(CollectData, null, TimeSpan.Zero, TimeSpan.FromSeconds(_options.SecondsDelay));
             return Task.CompletedTask;
         }
