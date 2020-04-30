@@ -26,21 +26,24 @@ namespace HomeClimatControl.Web.Application.Services
             public float? P { get; set; }
         }
         private static readonly object portLock = new object();
-        private SerialPort CreatePort() => new SerialPort
-            {
-                PortName = _options.SerialPortName,
-                BaudRate = _options.BaudRate
-            };
-
+        private SerialPort CreatePort() => PortSingleton;
+        private static SerialPort PortSingleton;
         private void ExecuteWithPort(Action<SerialPort> action)
         {
-           
+            if (PortSingleton == null)
+            {
+                PortSingleton = new SerialPort
+                {
+                    PortName = _options.SerialPortName,
+                    BaudRate = _options.BaudRate
+                };
+                PortSingleton.Open();
+            }
             try
             {
                 lock (portLock)
                 {
-                    using var port = CreatePort();
-                    port.Open();
+                    var port = CreatePort();
                     action(port);
                 }
             }
