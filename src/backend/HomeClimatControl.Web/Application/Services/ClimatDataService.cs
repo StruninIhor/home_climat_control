@@ -88,24 +88,24 @@ namespace HomeClimatControl.Web.Application.Services
             var applied = false;
             ExecuteWithPort(port =>
             {
-                _logger.LogInformation("Sending command {command}", command);
+                _logger.LogInformation("Sending command {command}, waiting for {timeToWaitOk} until ", command, _options.TimeToWaitOk);
                 //Waiting for buffer will be fulfilled with data
-                Thread.Sleep(1500);
+                Thread.Sleep(_options.TimeToWaitOk);
                 //Read all existing data from buffer for prevent errors
                 port.ReadExisting();
                 port.Write(command);
                 var counter = 0;
                 while (counter++ < _options.OkRetryCount)
                 {
-                    _logger.LogInformation("Waiting for OK response");
                     var data = port.ReadLine();
-                    _logger.LogInformation("Received response from serial port {response}", data);
                     if (data.Contains("OK"))
                     {
                         _logger.LogInformation("OK received");
                         applied = true;
                         break;
                     }
+                    _logger.LogInformation("Received response from serial port {response}", data);
+                    _logger.LogInformation("Waiting for OK response");
                 }
             });
             return applied;
