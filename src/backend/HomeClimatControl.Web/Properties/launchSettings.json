@@ -1,14 +1,19 @@
-﻿{
+{
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
     "HomeClimatControl.Web": {
       "commandName": "Project",
-      "launchBrowser": false,
+      "commandLineArgs": "--hosts=\"http://192.168.0.158:5000\"",
       "launchUrl": "api/data",
-      "applicationUrl": "http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "applicationUrl": "http://localhost:5000"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/api/data",
+      "publishAllPorts": true
     }
   }
 }
