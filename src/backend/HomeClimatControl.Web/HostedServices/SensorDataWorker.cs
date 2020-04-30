@@ -36,6 +36,11 @@ namespace HomeClimatControl.Web.HostedServices
 
         private void CollectData(object state)
         {
+            if (!Startup.IsDbMigrated)
+            {
+                _logger.LogInformation("DB is not migrated, waiting until next execution");
+                return;
+            }
             using var scope = _services.CreateScope();
             var climatService = scope.ServiceProvider.GetService<ClimatDataService>();
             var data = climatService.GetCurrentData();

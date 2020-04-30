@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Xml;
@@ -18,11 +19,32 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OData.Edm;
 using OdataToEntity.ModelBuilder;
+using Serilog;
+using Serilog.Core;
 
 namespace HomeClimatControl.Web
 {
     public class Startup
     {
+        private static object dbMigrateLock = new object();
+        private static bool _isDbMigrated = false;
+        public static bool IsDbMigrated
+        {
+           get
+            {
+                lock (dbMigrateLock)
+                {
+                    return _isDbMigrated;
+                }
+            }
+            set
+            {
+                lock (dbMigrateLock)
+                {
+                    _isDbMigrated = value;
+                }
+            }
+        }
         public void GenerateOdataClient()
         {
             var model = GetEdmModel();
@@ -71,11 +93,25 @@ namespace HomeClimatControl.Web
                 })
                 .Services
                 .AddOData();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
+            try
+            {
+                Log.Information("Migrating db...");
+                using var scope = app.ApplicationServices.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ClimatDbContext>();
+                context.Database.Migrate();
+                IsDbMigrated = true;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error while migrating db");
+            }
             app.UseCors();
             if (env.IsDevelopment())
             {
