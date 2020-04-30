@@ -1,0 +1,15 @@
+﻿[Unit]
+Description = Home Climat Control Service
+
+[Service]
+User=root
+ExecStart=usr/share/dotnet/dotnet $HOME/HomeClimatControl.Web.dll --environment="Development"
+Restart=on-failure
+RestartSec=2
+StartLimitBurst=10
+KillSignal=SIGQUIT
+StandardError=syslog
+NotifyAccess=all
+
+[Install]
+WantedBy=multi.user.target

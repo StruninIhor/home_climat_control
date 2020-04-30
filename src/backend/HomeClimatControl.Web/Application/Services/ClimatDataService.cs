@@ -75,12 +75,14 @@ namespace HomeClimatControl.Web.Application.Services
             {
                 using var port = CreatePort();
                 port.Open();
+                _logger.LogInformation("Sending command {command}", command);
                 port.Write(command);
                 var counter = 0;
                 while (counter++ < _options.OkRetryCount)
                 {
                     _logger.LogInformation("Waiting for OK response");
                     var data = port.ReadLine();
+                    _logger.LogInformation("Received response from serial port {response}", data);
                     if (data.Contains("OK"))
                     {
                         _logger.LogInformation("OK received");
