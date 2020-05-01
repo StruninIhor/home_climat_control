@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { BaseApi } from 'src/app/shared/core/base-api';
 import { ClimatData } from '../models/climat-data';
 import { HumidityLevel } from '../models/humidity-level';
@@ -21,17 +21,19 @@ export class ClimatDataService extends BaseApi {
    * getTemperatures
    */
   public getData(query : ClimatDataQuery = void 0) : Observable<ClimatData[]> {
-    let queryString = 'sensordata';
+    let params = new HttpParams();
     if (query != void 0) {
-      queryString += `?count=${query.count}`;
+      if (query.count) {
+        params = params.set('count', query.count.toString());
+      }
       if (query.startDate) {
-        queryString += `&startDate=${query.startDate}`
+        params = params.set('startDate', query.startDate);
       }
       if (query.endDate) {
-        queryString += `&endDate=${query.endDate}`
+        params = params.set('endDate', query.endDate);
       }
     }
-    return this.get(queryString);
+    return this.get('sensordata', params);
   }
 
   public startMaintenance() : Observable<any> {
