@@ -14,6 +14,7 @@ import { FormsModule } from '@angular/forms';
 import { MaxValidatorDirective } from './shared/directives/max-validator.directive';
 import { MinValidatorDirective } from './shared/directives/min-validator.directive';
 import { HistoricalDataComponent } from './pages/climat-control/historical-data/historical-data.component';
+import { SpinnerComponent } from './shared/components/spinner/spinner.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -23,6 +24,7 @@ import { HistoricalDataComponent } from './pages/climat-control/historical-data/
     MaxValidatorDirective,
     MinValidatorDirective,
     HistoricalDataComponent,
+    SpinnerComponent,
   ],
   imports: [
     BrowserModule,
