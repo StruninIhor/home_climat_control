@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Transactions;
 using System.Xml;
 using HomeClimatControl.Web.Application.Services;
 using HomeClimatControl.Web.Application.Services.ServiceOptions;
@@ -71,34 +72,43 @@ namespace HomeClimatControl.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSignalR();
-            services.Configure<SerialPortOptions>(Configuration.GetSection(nameof(SerialPortOptions)));
-            services.Configure<SensorDataWorkerOptions>(Configuration.GetSection(nameof(SensorDataWorkerOptions)));
             services.AddCors(x => x.AddDefaultPolicy(p =>
             {
                 p.AllowAnyOrigin()
                 .AllowAnyMethod()
-                .AllowAnyHeader();
+                .AllowAnyHeader()
+                .SetIsOriginAllowed((s) => true);
             }));
+            services.Configure<SerialPortOptions>(Configuration.GetSection(nameof(SerialPortOptions)));
+            services.Configure<SensorDataWorkerOptions>(Configuration.GetSection(nameof(SensorDataWorkerOptions)));
+            
+
             services.AddScoped<ClimatDataService>();
             services.AddHostedService<SensorDataWorker>();
             services
                 .AddDbContext<ClimatDbContext>(options =>
                 {
                     options.UseSqlite(Configuration.GetConnectionString(nameof(ClimatDbContext)), builder => builder.MigrationsHistoryTable("EFMigrations"));
-                })
+                });
+            services.AddSignalR(o =>
+            {
+                o.EnableDetailedErrors = true;
+            });
+            services
                 .AddControllers(mvcOptions =>
                 {
                     //mvcOptions.En
                 })
                 .Services
                 .AddOData();
+            
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCors();
 
             try
             {
@@ -112,7 +122,7 @@ namespace HomeClimatControl.Web
             {
                 Log.Error(ex, "Error while migrating db");
             }
-            app.UseCors();
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -124,11 +134,11 @@ namespace HomeClimatControl.Web
             
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHub<SensorDataHub>("/realtime-sensor");
                 endpoints.MapControllers();
                 endpoints.EnableDependencyInjection();
                 endpoints.Select().Filter().OrderBy().Count().MaxTop(10);
                 endpoints.MapODataRoute("odata", "odata", GetEdmModel());
+                endpoints.MapHub<SensorDataHub>("/realtime-sensor");
             });
         }
 
