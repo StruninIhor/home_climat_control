@@ -84,9 +84,6 @@ void mainFunc() {
     Serial.println("Device state: " + String(state));
     Serial.println("Maintenance: " + String(maintenance));
   }
-  if (lowHumidityLevel < humidity && humidity < highHumidityLevel) {
-    switchHumidifier(false, false);
-  }
   if (humidity > highHumidityLevel) {
     switchHumidifier(false, false);
   }
