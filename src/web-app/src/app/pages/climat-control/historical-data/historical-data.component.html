@@ -1,11 +1,11 @@
 <mat-card>
   <form (ngSubmit)="queryData(queryForm)" #queryForm="ngForm">
     <mat-checkbox #countChecbox>
-      Choose count of elements to select
+      Choose count of samples to select
     </mat-checkbox> <br />
     <mat-form-field *ngIf="countChecbox.checked">
       <mat-label>Count of elements</mat-label>
-      <input matInput step="1" type="number" placeholder="Count" id="count" name="count" [required]="countChecbox.checked" [(ngModel)]="query.count" app-min="10" app-max="200">
+      <input matInput step="1" type="number" placeholder="Count" id="count" name="count" [required]="countChecbox.checked" [(ngModel)]="query.count" app-min="10" app-max="500">
     </mat-form-field><br/>
     <mat-form-field>
       <mat-label>Start date</mat-label>
@@ -47,7 +47,9 @@
         </mat-panel-title>
         
       </mat-expansion-panel-header>
-      
+      Mean: {{mean(dataToDisplay[data][0].data) | number : '.1-2'}}<br>
+      Max: {{max(dataToDisplay[data][0].data) | number : '.1-2' }}<br>
+      Min: {{min(dataToDisplay[data][0].data) | number : '.1-2' }}
       <!-- {{dataToDisplay[data] | json}}
       {{dateLabels | json}} -->
           <app-sensor-data-chart

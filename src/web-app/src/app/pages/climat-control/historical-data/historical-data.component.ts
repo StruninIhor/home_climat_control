@@ -73,7 +73,7 @@ export class HistoricalDataComponent extends BaseComponent implements OnInit {
 
   public dateLabels : Label[] = []
   query : HistoricalDataQuery =  {
-    startDate: moment().add('days', -1),
+    startDate: moment().startOf('day'),
     count: undefined,
     endDate: moment(),
     dataToGather: []
@@ -125,7 +125,15 @@ export class HistoricalDataComponent extends BaseComponent implements OnInit {
   }
 
 
-  mean(arr : number[]) {
-    return arr.reduce((a,b) => a+b, 0);
+  mean(arr : any) {
+    return arr.reduce((a,b) => a+b, 0) / arr.length;
+  }
+
+  max(arr: any) {
+    return Math.max(...arr);
+  }
+
+  min(arr: any) {
+    return Math.min(...arr);
   }
 }
