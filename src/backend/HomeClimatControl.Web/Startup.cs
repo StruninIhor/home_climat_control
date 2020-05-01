@@ -8,6 +8,7 @@ using HomeClimatControl.Web.Data;
 using HomeClimatControl.Web.Domain.Entities;
 using HomeClimatControl.Web.HostedServices;
 using HomeClimatControl.Web.HostedServices.Options;
+using HomeClimatControl.Web.Hubs;
 using Microsoft.AspNet.OData.Builder;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Builder;
@@ -70,6 +71,7 @@ namespace HomeClimatControl.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSignalR();
             services.Configure<SerialPortOptions>(Configuration.GetSection(nameof(SerialPortOptions)));
             services.Configure<SensorDataWorkerOptions>(Configuration.GetSection(nameof(SensorDataWorkerOptions)));
             services.AddCors(x => x.AddDefaultPolicy(p =>
@@ -122,6 +124,7 @@ namespace HomeClimatControl.Web
             
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHub<SensorDataHub>("/realtime-sensor");
                 endpoints.MapControllers();
                 endpoints.EnableDependencyInjection();
                 endpoints.Select().Filter().OrderBy().Count().MaxTop(10);
