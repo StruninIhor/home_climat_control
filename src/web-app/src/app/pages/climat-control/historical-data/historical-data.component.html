@@ -1,7 +1,63 @@
-<form (ngSubmit)="queryData()" [(ngModel)]="query">
-    <mat-form-field>
+<mat-card>
+  <form (ngSubmit)="queryData(queryForm)" #queryForm="ngForm">
+    <mat-checkbox #countChecbox>
+      Choose count of elements to select
+    </mat-checkbox> <br />
+    <mat-form-field *ngIf="countChecbox.checked">
       <mat-label>Count of elements</mat-label>
-      <input matInput step="1" type="number" placeholder="Count" id="count" name="count" [(ngModel)]="query.count" required app-min="10">
+      <input matInput step="1" type="number" placeholder="Count" id="count" name="count" [required]="countChecbox.checked" [(ngModel)]="query.count" app-min="10" app-max="200">
+    </mat-form-field><br/>
+    <mat-form-field>
+      <mat-label>Start date</mat-label>
+      <input matInput [matDatepicker]="startDatePicker" [(ngModel)]="query.startDate" name="startDate">
+      <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+      <mat-datepicker #startDatePicker></mat-datepicker>
+    </mat-form-field><br/>
+    <mat-form-field>
+      <mat-label>End date</mat-label>
+      <input matInput [matDatepicker]="endDatePicker" [(ngModel)]="query.endDate" name="endDate">
+      <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+      <mat-datepicker #endDatePicker></mat-datepicker>
+    </mat-form-field><br>
+    <mat-form-field>
+      <mat-label>Data to gather</mat-label>
+      <!-- (ngModelChane)="query.dataToGather" -->
+      <mat-select required multiple [(ngModel)]="query.dataToGather"  name="dataToGather">
+        <mat-option *ngFor="let data of dataToGather" [value]="data" >{{data | titlecase}}</mat-option>
+      </mat-select>
     </mat-form-field>
-    <button mat-button>Query sensor data</button>
+    <mat-divider></mat-divider>
+    <button mat-button [disabled]="queryForm.invalid || queryForm.untouched">Query sensor data</button>
   </form>
+  
+</mat-card>
+
+<mat-progress-bar
+          *ngIf="dataLoading" 
+          mode="query"
+          color="primary"
+          ></mat-progress-bar>
+<mat-divider></mat-divider>
+<mat-card>
+  <div *ngFor="let data of dataToGather">
+    <mat-expansion-panel *ngIf="dataToDisplay[data][0].data">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{data | titlecase}} sensor data
+        </mat-panel-title>
+        
+      </mat-expansion-panel-header>
+      
+      <!-- {{dataToDisplay[data] | json}}
+      {{dateLabels | json}} -->
+          <app-sensor-data-chart
+            [datasets]="dataToDisplay[data]"
+            [labels]="dateLabels"
+            [colors]="lineChartColors"
+            [showLegend]="true"
+            >
+    </app-sensor-data-chart>
+    </mat-expansion-panel>
+  </div>
+ 
+  </mat-card>

@@ -52,7 +52,7 @@ namespace HomeClimatControl.Web.Controllers
             return await GetQuery(model).ToArrayAsync(HttpContext.RequestAborted);
         }
 
-        [HttpGet("temperatures")]
+        [HttpGet("temperature")]
         public async Task<ActionResult<SensorRecord[]>> GetTemperatures([FromQuery]ClimatQueryModel model)
         {
             return await GetQuery(model).Select(x => new SensorRecord
@@ -63,7 +63,7 @@ namespace HomeClimatControl.Web.Controllers
             }).ToArrayAsync(HttpContext.RequestAborted);
         }
 
-        [HttpGet("humidities")]
+        [HttpGet("humidity")]
         public async Task<ActionResult<SensorRecord[]>> GetHumidities([FromQuery] ClimatQueryModel model)
         {
             return await GetQuery(model).Select(x => new SensorRecord
@@ -74,7 +74,7 @@ namespace HomeClimatControl.Web.Controllers
             }).ToArrayAsync(HttpContext.RequestAborted);
         }
 
-        [HttpGet("pressures")]
+        [HttpGet("pressure")]
         public async Task<ActionResult<SensorRecord[]>> GetPressures([FromQuery] ClimatQueryModel model)
         {
             return await GetQuery(model).Select(x => new SensorRecord
