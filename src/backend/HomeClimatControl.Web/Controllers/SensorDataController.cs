@@ -22,8 +22,6 @@ namespace HomeClimatControl.Web.Controllers
         public ActionResult<SensorRecord[]> Get(DateTime? startDate, DateTime? endDate, int? count)
         {
             var q = _context.SensorRecords
-                .AsQueryable()
-                .OrderBy(x => x.Date)
                 .AsQueryable();
             if (startDate != null)
             {
@@ -35,8 +33,10 @@ namespace HomeClimatControl.Web.Controllers
             }
             if (count != null)
             {
-                q = q.TakeLast(count.Value);
+                q = q.OrderByDescending(x => x.Date);
+                q = q.Take(count.Value);
             }
+            q = q.OrderBy(x => x.Date);
             return q.ToArray();
 
         }
