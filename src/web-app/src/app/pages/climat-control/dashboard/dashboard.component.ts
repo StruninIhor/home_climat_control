@@ -80,7 +80,7 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     let today = moment().startOf('day');
     var query : ClimatDataQuery = {
-      count: 200,
+      count: void 0,
       endDate: void 0,
       startDate: today,
     };
