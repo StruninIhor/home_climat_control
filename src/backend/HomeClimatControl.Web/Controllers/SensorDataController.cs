@@ -35,7 +35,7 @@ namespace HomeClimatControl.Web.Controllers
             }
             if (count != null)
             {
-                q = q.Take(count.Value);
+                q = q.TakeLast(count.Value);
             }
             return q.ToArray();
 
