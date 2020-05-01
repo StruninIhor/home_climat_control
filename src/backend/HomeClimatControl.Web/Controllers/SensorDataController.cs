@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using HomeClimatControl.Web.Application.Services;
 using HomeClimatControl.Web.Data;
 using HomeClimatControl.Web.Domain.Entities;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OData.Edm;
 
 namespace HomeClimatControl.Web.Controllers
@@ -18,28 +20,71 @@ namespace HomeClimatControl.Web.Controllers
         private readonly ClimatDataService _dataService;
         public SensorDataController(ClimatDbContext context, ClimatDataService dataService) => (_context, _dataService) = (context, dataService);
 
-        [HttpGet]
-        public ActionResult<SensorRecord[]> Get(DateTime? startDate, DateTime? endDate, int? count)
+        public class ClimatQueryModel
         {
-            var q = _context.SensorRecords
-                .AsQueryable();
-            if (startDate != null)
-            {
-                q = q.Where(x => x.Date > startDate);
-            }
-            if (endDate != null)
-            {
-                q = q.Where(x => x.Date < endDate);
-            }
-            if (count != null)
-            {
-                q = q.OrderByDescending(x => x.Date);
-                q = q.Take(count.Value);
-            }
-            q = q.OrderBy(x => x.Date);
-            return q.ToArray();
-
+            public DateTime? StartDate { get; set; }
+            public DateTime? EndDate { get; set; }
+            public int? Count { get; set; }
         }
+
+        public IQueryable<SensorRecord> GetQuery(ClimatQueryModel model)
+        {
+            var source = _context.SensorRecords.AsQueryable();
+            if (model.StartDate.HasValue)
+            {
+                source = source.Where(x => x.Date > model.StartDate.Value);
+            }
+            if (model.EndDate.HasValue)
+            {
+                source = source.Where(x => x.Date < model.EndDate);
+            }
+            if (model.Count.HasValue)
+            {
+                source = source.OrderByDescending(x => x.Date);
+                source = source.Take(model.Count.Value);
+            }
+            return source.OrderBy(x => x.Date);
+        }
+ 
+        [HttpGet]
+        public async Task<ActionResult<SensorRecord[]>> Get([FromQuery]ClimatQueryModel model)
+        {
+            return await GetQuery(model).ToArrayAsync(HttpContext.RequestAborted);
+        }
+
+        [HttpGet("temperatures")]
+        public async Task<ActionResult<SensorRecord[]>> GetTemperatures([FromQuery]ClimatQueryModel model)
+        {
+            return await GetQuery(model).Select(x => new SensorRecord
+            {
+                Id = x.Id,
+                Date = x.Date,
+                Temperature = x.Temperature
+            }).ToArrayAsync(HttpContext.RequestAborted);
+        }
+
+        [HttpGet("humidities")]
+        public async Task<ActionResult<SensorRecord[]>> GetHumidities([FromQuery] ClimatQueryModel model)
+        {
+            return await GetQuery(model).Select(x => new SensorRecord
+            {
+                Id = x.Id,
+                Date = x.Date,
+                Humidity = x.Humidity
+            }).ToArrayAsync(HttpContext.RequestAborted);
+        }
+
+        [HttpGet("pressures")]
+        public async Task<ActionResult<SensorRecord[]>> GetPressures([FromQuery] ClimatQueryModel model)
+        {
+            return await GetQuery(model).Select(x => new SensorRecord
+            {
+                Id = x.Id,
+                Date = x.Date,
+                Pressure = x.Pressure 
+            }).ToArrayAsync(HttpContext.RequestAborted);
+        }
+
 
         [HttpPut("humidityLevel")]
         public IActionResult ConfigureHumidity([FromBody] HumididityConfigurationModel model)
