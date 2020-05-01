@@ -1,6 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { ChartOptions, ChartDataSets, ChartType, ChartPluginsOptions, } from 'chart.js';
-import { Label, Color } from 'ng2-charts';
+import { Label, Color, BaseChartDirective } from 'ng2-charts';
 
 @Component({
   selector: 'app-sensor-data-chart',
@@ -9,7 +9,8 @@ import { Label, Color } from 'ng2-charts';
 })
 export class SensorDataChartComponent implements OnInit {
 
-
+  @ViewChild(BaseChartDirective) chart: BaseChartDirective;
+  
   @Input('datasets')
   public datasets : ChartDataSets[] = []
   @Input('labels')
@@ -18,6 +19,11 @@ export class SensorDataChartComponent implements OnInit {
   colors: Color[] = [];
   @Input('showLegend')
   showLegend  = true;
+
+  public updateChart() {
+    this.chart.update();
+  }
+
 
   private createScalesIfUndefined() {
     if (this.lineChartOptions.scales == void 0) {

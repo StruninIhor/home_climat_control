@@ -67,6 +67,7 @@ color="primary"
           color="primary"
           ></mat-progress-bar>
           <app-sensor-data-chart
+            #sensorData
             [datasets]="temperatures"
             [labels]="dateLabels"
             [colors]="lineChartColors"
@@ -91,6 +92,7 @@ color="primary"
           color="primary"
           ></mat-progress-bar>
           <app-sensor-data-chart
+            #sensorData
             [datasets]="humidities"
             [labels]="dateLabels"
             [colors]="lineChartColors"
@@ -115,6 +117,7 @@ color="primary"
           color="primary"
           ></mat-progress-bar>
           <app-sensor-data-chart
+            #sensorData
             [datasets]="pressures"
             [labels]="dateLabels"
             [colors]="lineChartColors"

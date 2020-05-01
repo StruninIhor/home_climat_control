@@ -2,18 +2,15 @@
 using HomeClimatControl.Web.Data;
 using HomeClimatControl.Web.Domain.Entities;
 using HomeClimatControl.Web.HostedServices.Options;
+using HomeClimatControl.Web.Hubs;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Serilog;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -47,17 +44,23 @@ namespace HomeClimatControl.Web.HostedServices
             var climatService = scope.ServiceProvider.GetService<ClimatDataService>();
             var data = climatService.GetCurrentData();
             _logger.LogInformation("Got information from sensor: {0}", JsonConvert.SerializeObject(data, Formatting.Indented));
+            var hubContext = scope.ServiceProvider.GetService<IHubContext<SensorDataHub>>();
+            //var data = new Application.SensorData.SensorDataDto { };
+            var record = new SensorRecord
+            {
+                Date = data?.Date ?? DateTime.Now,
+                Humidity = data?.Humidity ?? 0,
+                Pressure = data?.Pressure ?? 0,
+                Temperature = data?.Temperature ?? 0
+            };
+            hubContext.Clients.All.SendAsync(nameof(SensorDataHub.CurrentData), record).Wait();
             var context = scope.ServiceProvider.GetService<ClimatDbContext>();
             context.SensorRecords.Add(
-                new SensorRecord
-                {
-                    Date = data?.Date ?? DateTime.Now,
-                    Humidity = data?.Humidity ?? 0,
-                    Pressure = data?.Pressure ?? 0,
-                    Temperature = data?.Temperature ?? 0
-                });
+                record
+               );
             context.SaveChanges();
         }
+
         public Task StopAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("Sensor data worker is stopping.");
